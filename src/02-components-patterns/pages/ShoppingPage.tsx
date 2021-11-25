@@ -3,19 +3,18 @@ import ProductCard, {
   ProductImage,
   ProductTitle,
 } from "../components/product";
+import { products } from "../data/products.data";
+import { useShoppingCard } from "../hooks/useShoppingCard";
 import "../styles/custom-styles.css";
 
-const product = {
-  id: "1",
-  title: "Coffe Mug - Card",
-  img: "./coffee-mug.png",
-};
-
 export default function ShoppingPage() {
+  const { shoppingCart, onProductCountChange } = useShoppingCard();
+
   return (
     <div>
       <h1>Shopping Store</h1>
       <hr />
+
       <div
         style={{
           display: "flex",
@@ -23,26 +22,49 @@ export default function ShoppingPage() {
           flexWrap: "wrap",
         }}
       >
-        <ProductCard product={product}>
-          <ProductImage className="custom-image" />
-          <ProductTitle />
-          <ProductButtons />
-        </ProductCard>
-        <ProductCard className="bg-dark text-white" product={product}>
-          <ProductCard.Image className="custom-image" />
-          <ProductCard.Title
-            className="text-white font-weight"
-            title="Card 2"
-          />
-          <ProductCard.Buttons className="custom-buttons" />
-        </ProductCard>
+        {products.map((product) => (
+          <ProductCard
+            key={product.id}
+            product={product}
+            className="bg-dark text-white"
+            onChange={onProductCountChange}
+            value={
+              Object.keys(shoppingCart).includes(product.id)
+                ? shoppingCart[product.id.toString()].count
+                : 0
+            }
+          >
+            <ProductImage className="custom-image" />
+            <ProductTitle className="text-white font-weight" />
+            <ProductButtons className="custom-buttons" />
+          </ProductCard>
+        ))}
 
-        <ProductCard product={product} style={{ backgroundColor: "crimson" }}>
-          <ProductCard.Image />
-          <ProductCard.Title title="Card 2" />
-          <ProductCard.Buttons />
-        </ProductCard>
+        <div className="shopping-cart">
+          {Object.entries(shoppingCart).map(([key, product]) => (
+            <ProductCard
+              key={key}
+              className="bg-dark text-white"
+              style={{ width: "200px" }}
+              product={product}
+              value={product.count}
+              onChange={onProductCountChange}
+            >
+              <ProductCard.Image className="custom-image" />
+              <ProductCard.Title title={product.count.toString()} />
+              <ProductCard.Buttons
+                className="custom-buttons"
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              />
+            </ProductCard>
+          ))}
+        </div>
       </div>
+
+      <p>{JSON.stringify(shoppingCart)}</p>
     </div>
   );
 }

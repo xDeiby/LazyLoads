@@ -16,10 +16,19 @@ export interface Props {
   children?: ReactElement | ReactElement[];
   className?: string;
   style?: CSSProperties;
+  onChange?: (product: Product, count: number) => void;
+  value?: number;
 }
 
-export function ProductCard({ product, children, className, style }: Props) {
-  const productHook = useProduct();
+export function ProductCard({
+  product,
+  children,
+  className,
+  style,
+  onChange,
+  value,
+}: Props) {
+  const productHook = useProduct({ product, onChange, value });
 
   return (
     <Provider value={{ ...productHook, product }}>
